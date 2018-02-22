@@ -9,12 +9,12 @@ when connected to the SPI bus.
 The idea is to provide a simple interface for C programmers to make use of 
 those low-cost LCD displays without having to read the data sheet or figure
 out SPI programming. Unfortunately the display controller needs a couple of
-control lines (GPIO pins) for Reseti, backlight and Data/Command; this requires extra work.
+control lines (GPIO pins) for Reset, backlight and Data/Command; this requires extra work.
 In this case, I use my ArmbianIO library (https://github.com/bitbank2/ArmbianIO)
 <br>
 To build the library, simply type 'make' in the terminal. To build the sample
-app, type 'make -f make_sample'. This will build the n5110 executable to show
-that the library is working.
+app, type 'make -f make_sample'. This will build the demo executable to show
+that the library is working. Press ENTER to exit the demo.
 <br>
 Troubleshooting tips:<br>
 <b4>
@@ -22,7 +22,7 @@ Troubleshooting tips:<br>
 2) Connect the "CS" pin of the UC1701 to the CE0 pin on the header.<br>
 3) You can use any GPIO pins to control the D/C,RST/LED lines; initialize the
    library with the pin numbers used (not GPIO numbers)<br>
-<br>
+
 Written by Larry Bank<br>
 Project started 2/22/2018<br>
 bitbank@pobox.com<br>
