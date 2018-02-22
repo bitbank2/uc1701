@@ -1,0 +1,14 @@
+CFLAGS=-c -Wall -O2
+LIBS= -luc1701 -larmbianio -lpthread -lm
+
+all: demo
+
+demo: main.o
+	$(CC) main.o $(LIBS) -o demo
+
+main.o: main.c
+	$(CC) $(CFLAGS) main.c
+
+clean:
+	rm *.o demo
+
