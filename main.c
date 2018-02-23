@@ -19,7 +19,7 @@ int x;
 	rc = uc1701Init(0, 18, 13, 11);
 	if (rc != 0)
 	{
-		printf("Problem initializing uc17015110 library\n");
+		printf("Problem initializing uc1701 library\n");
 		return 0;
 	}
 	uc1701Backlight(1);

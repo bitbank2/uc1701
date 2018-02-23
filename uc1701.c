@@ -107,7 +107,7 @@ int uc1701Init(int iChannel, int iDC, int iReset, int iLED)
 	uc1701WriteCommand(0x00); // 4x
 	uc1701WriteCommand(0x23); // set resistor ratio = 4
 	uc1701WriteCommand(0x81);
-	uc1701WriteCommand(0x30); // set contrast = 48
+	uc1701WriteCommand(0x28); // set contrast = 40
 	uc1701WriteCommand(0xac); // set static indicator off
 	uc1701WriteCommand(0x00);
 	uc1701WriteCommand(0xa6); // disable inverse
@@ -134,9 +134,9 @@ void uc1701Shutdown()
 {
 	if (file_spi != 0)
 	{
-		uc1701SetMode(MODE_COMMAND);
 		uc1701Backlight(0); // turn off the backlight
 		uc1701WriteCommand(0xae); // power down
+		uc1701WriteCommand(0xa5); // all pixels on sets lowest power
 		AIOCloseSPI(file_spi);
 		file_spi = 0;
 	}
