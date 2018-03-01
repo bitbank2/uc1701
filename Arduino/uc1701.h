@@ -15,6 +15,10 @@
 // #define BACKING_RAM
 
 //
+// Load a 128x64 1-bpp Windows bitmap
+//
+int uc1701LoadBMP(byte *pBMP);
+//
 // Power up the display
 //
 void uc1701PowerUp(void);
