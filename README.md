@@ -30,4 +30,6 @@ This LCD controller is advertised as being extremely low power. It is, but the P
 Written by Larry Bank<br>
 Project started 2/22/2018<br>
 bitbank@pobox.com<br>
-
+<br>
+If you find this code useful, please consider buying me a cup of coffee<br>
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SR4F44J2UR8S4)
