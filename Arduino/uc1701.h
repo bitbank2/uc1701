@@ -14,6 +14,15 @@
 //
 // #define BACKING_RAM
 
+// Write a block of pixel data from FLASH ROM to the LCD
+void uc1701WriteFlashBlock(unsigned char *ucBuf, int iLen);
+// Write a repeating byte to the LCD
+void uc1701RepeatByte(unsigned char uc, int iLen);
+
+// Send commands to position the "cursor" to the given
+// row and column
+void uc1701SetPosition(int x, int y);
+
 //
 // Load a 128x64 1-bpp Windows bitmap
 //
