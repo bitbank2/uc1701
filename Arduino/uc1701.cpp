@@ -949,12 +949,12 @@ void uc1701Fill(byte ucData)
 int x, y;
 byte temp[32];
 
-  memset(temp, ucData, 32);
   for (y=0; y<8; y++)
   {
     uc1701SetPosition(0,y); // set to (0,Y)
     for (x=0; x<4; x++)
     {
+      memset(temp, ucData, 32); // need to do it every time since SPI overwrites the buffer while writing (simultaneous read)
       uc1701WriteDataBlock(temp, 32); // fill with data byte
     } // for x
   } // for y;
