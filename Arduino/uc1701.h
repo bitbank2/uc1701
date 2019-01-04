@@ -41,7 +41,7 @@ void uc1701PowerDown(void);
 // Parameters: GPIO pin numbers used for the DC/RST/LED control lines
 // If not using the LED backlight, set iLED to -1
 //
-int uc1701Init(int iDC, int iReset, int iLED, byte bFlip180, byte bInvert);
+int uc1701Init(int iDC, int iReset, int iLED, int iCS, byte bFlip180, byte bInvert);
 //
 // Fill the display with a byte pattern
 //

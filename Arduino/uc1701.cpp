@@ -487,7 +487,7 @@ const byte ucSmallFont[]PROGMEM = {
 #include <Wire.h>
 #include <SPI.h>
 
-const int csPin = 10;
+static int csPin = 10;
 
 static int iScreenOffset; // current write offset of screen data
 #ifdef BACKING_RAM
@@ -540,10 +540,11 @@ void uc1701PowerUp(void)
 // Prepares the font data for the orientation of the display
 // Parameters: GPIO pin numbers used for the DC/RST/LED control lines
 //
-int uc1701Init(int iDC, int iReset, int iLED, byte bFlip180, byte bInvert)
+int uc1701Init(int iDC, int iReset, int iLED, int iCS, byte bFlip180, byte bInvert)
 {
 
         iDCPin = iDC;
+        csPin = iCS;
         iResetPin = iReset;
         iLEDPin = iLED;
 
