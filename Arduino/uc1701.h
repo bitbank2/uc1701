@@ -57,7 +57,7 @@ void uc1701Fill(byte pattern);
 //
 void uc1701Backlight(int bOn);
 //
-// Set the contrast value (0 = min, 15 = max)
+// Set the contrast value (0 = min, 63 = max, 32 = default)
 //
 int uc1701SetContrast(unsigned char ucContrast);
 //
