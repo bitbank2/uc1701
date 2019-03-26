@@ -492,6 +492,7 @@ static void uc1701WriteCommand(unsigned char c);
 // DEBUG - bit bang on data port D
 #define LCD_CLK 0x10
 #define LCD_DATA 0x02
+#define LCD_CS 0x20
 
 typedef enum
 {
@@ -566,7 +567,7 @@ int uc1701Init(int iDC, int iReset, int iLED, int iCS, byte bFlip180, byte bInve
         digitalWrite(iResetPin, HIGH); // take it out of reset
         delay(10);
         uc1701Backlight(1); // turn on the backlight
-        digitalWrite(csPin, LOW);
+//        digitalWrite(csPin, LOW);
 
   uc1701PowerUp(); // turn on and initialize the display
 
@@ -582,7 +583,7 @@ int uc1701Init(int iDC, int iReset, int iLED, int iCS, byte bFlip180, byte bInve
      uc1701WriteCommand(0xa7); // set inverted pixel mode
   }
   uc1701SetMode(MODE_DATA);
-  digitalWrite(csPin, HIGH);
+//  digitalWrite(csPin, HIGH);
   return 0;
 
 } /* uc1701Init() */
@@ -601,32 +602,40 @@ void uc1701Backlight(int bOn)
 //
 void uc1701PowerDown()
 {
-    digitalWrite(csPin, LOW);
+//    digitalWrite(csPin, LOW);
     uc1701Fill(0); // fill memory with zeros to go to lowest power mode
     uc1701Backlight(0); // turn off the backlight
     uc1701SetMode(MODE_COMMAND);
     uc1701WriteCommand(0xae); // power down
     uc1701WriteCommand(0xa5); // all pixels on (saves power)
     uc1701SetMode(MODE_DATA);
-    digitalWrite(csPin, HIGH);
+//    digitalWrite(csPin, HIGH);
 }
 
 void SPI_transfer(unsigned char c)
 {
 uint8_t i;
 
+//
+// Activating the Chip Select pin for each byte transfer
+// seems to be the only way to reliably use this display
+// I'm not sure if the SPI bus is getting interference from other operations
+// but if you leave CS LOW, erroneous commands will be sent to the controller
+// and it will flip out and go blank
+//
+  PORTD &= ~LCD_CS;
   for (i=0; i < 8; i++){
    if (c & 0x80)
      PORTD |= LCD_DATA;
    else
      PORTD &= ~LCD_DATA;
-   delayMicroseconds(1);
+//   delayMicroseconds(1);
    PORTD |= LCD_CLK; // cbi lcd_scl
-   //_delay_us(4);
+//   delayMicroseconds(1); 
    PORTD &= ~LCD_CLK;
    c <<= 1;    
   }
-	
+  PORTD |= LCD_CS;	
 } /* SPI_transfer() */
 
 static void uc1701WriteCommand(unsigned char c)
@@ -639,12 +648,12 @@ static void uc1701WriteCommand(unsigned char c)
 
 int uc1701SetContrast(unsigned char ucContrast)
 {
-  digitalWrite(csPin, LOW);
+//  digitalWrite(csPin, LOW);
   uc1701SetMode(MODE_COMMAND);
   uc1701WriteCommand(0x81); // set contrast
   uc1701WriteCommand(ucContrast);
   uc1701SetMode(MODE_DATA);
-  digitalWrite(csPin, HIGH);
+//  digitalWrite(csPin, HIGH);
   return 0;
 } /* uc1701SetContrast() */
 
@@ -793,7 +802,7 @@ byte bFlipped = false;
     iOffBits += (63 * 16); // start from bottom
   }
 
-  digitalWrite(csPin, LOW);
+//  digitalWrite(csPin, LOW);
 // rotate the data and send it to the display
   for (y=0; y<8; y++) // 8 lines of 8 pixels
   {
@@ -821,7 +830,7 @@ byte bFlipped = false;
          uc1701WriteDataBlock(ucTemp, 32);
      } // for j
   } // for y
-  digitalWrite(csPin, HIGH);
+//  digitalWrite(csPin, HIGH);
   return 0;
 } /* uc1701LoadBMP() */
 //
@@ -832,7 +841,7 @@ void uc1701DumpBuffer(uint8_t *pBuffer)
 int x, y;
 uint8_t ucTemp[32];
 
-  digitalWrite(csPin, LOW);
+//  digitalWrite(csPin, LOW);
   for (y=0; y<8; y++)
   {
      uc1701SetPosition(0, y);
@@ -843,7 +852,7 @@ uint8_t ucTemp[32];
         pBuffer += 32;
      } // for x
   } // for y
-  digitalWrite(csPin, HIGH);
+//  digitalWrite(csPin, HIGH);
 } /* uc1701DumpBuffer() */
 
 // Set (or clear) an individual pixel
@@ -867,10 +876,10 @@ unsigned char uc, ucOld;
   }
   if (uc != ucOld) // pixel changed
   {
-    digitalWrite(csPin, LOW);
+//    digitalWrite(csPin, LOW);
     uc1701SetPosition(x, y>>3);
     uc1701WriteDataBlock(&uc, 1);
-    digitalWrite(csPin, HIGH);
+//    digitalWrite(csPin, HIGH);
   }
   return 0;
 } /* uc1701SetPixel() */
@@ -901,7 +910,7 @@ int uc1701WriteString(int x, int y, char *szMsg, int iSize, int bInverted)
 int i, j, iLen;
 unsigned char ucTemp[64], *s;
 
-    digitalWrite(csPin, LOW);
+//    digitalWrite(csPin, LOW);
     iLen = strlen(szMsg);
     if (iSize == FONT_LARGE) // draw 16x32 font
   {
@@ -969,7 +978,7 @@ unsigned char ucTemp[64], *s;
     } 
 
    }
-  digitalWrite(csPin, HIGH);
+//  digitalWrite(csPin, HIGH);
   return 0;
 } /* uc1701WriteString() */
 
@@ -980,7 +989,7 @@ void uc1701Fill(byte ucData)
 int x, y;
 byte temp[32];
 
-  digitalWrite(csPin, LOW);
+//  digitalWrite(csPin, LOW);
   for (y=0; y<8; y++)
   {
     uc1701SetPosition(0,y); // set to (0,Y)
@@ -990,6 +999,6 @@ byte temp[32];
       uc1701WriteDataBlock(temp, 32); // fill with data byte
     } // for x
   } // for y;
-  digitalWrite(csPin, HIGH);
+//  digitalWrite(csPin, HIGH);
 } /* uc1701Fill() */
 
