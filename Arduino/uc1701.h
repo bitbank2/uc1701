@@ -12,7 +12,7 @@
 // Uncomment this define to allow the pixel functions to work
 // It requires an extra 1024 bytes of memory (rare on Arduinos)
 //
-// #define BACKING_RAM
+#define BACKING_RAM
 
 // Write a block of pixel data from FLASH ROM to the LCD
 void uc1701WriteFlashBlock(unsigned char *ucBuf, int iLen);
@@ -27,6 +27,11 @@ void uc1701SetPosition(int x, int y);
 // Load a 128x64 1-bpp Windows bitmap
 //
 int uc1701LoadBMP(byte *pBMP);
+//
+// Returns a pointer to the internal display buffer
+//
+uint8_t * uc1701GetDisplayBuffer(void);
+
 //
 // Power up the display
 //
@@ -77,5 +82,8 @@ int uc1701GetPixel(int x, int y);
 // At the given col+row
 //
 int uc1701WriteString(int x, int y, char *szMsg, int bInverted, int iSize);
-
+//
+// Draw an arbitrary line from x1,y1 to x2,y2
+//
+void uc1701DrawLine(int x1, int y1, int x2, int y2);
 
