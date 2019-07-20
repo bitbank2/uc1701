@@ -251,6 +251,8 @@ unsigned char *s;
 			uc1701WriteDataBlock(s+16, 16);	
 			uc1701SetPosition(x+(i*16), y+2);
 			uc1701WriteDataBlock(s+32, 16);	
+			uc1701SetPosition(x+(i*16), y+3);
+			uc1701WriteDataBlock(s+48, 16);
 		}
 	}
 	else if (iSize == FONT_NORMAL) // draw 8x8 font
