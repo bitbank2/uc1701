@@ -9,6 +9,16 @@
 #define FONT_STRETCHED 2
 #define FONT_LARGE 3
 
+// Rotation and flip angles to draw tiles
+enum {
+  ANGLE_0=0,
+  ANGLE_90,
+  ANGLE_180,
+  ANGLE_270,
+  ANGLE_FLIPX,
+  ANGLE_FLIPY
+};
+
 //
 // Uncomment this define to allow the pixel functions to work
 // It requires an extra 1024 bytes of memory (rare on Arduinos)
@@ -87,4 +97,13 @@ int uc1701WriteString(int x, int y, char *szMsg, int bInverted, int iSize);
 // Draw an arbitrary line from x1,y1 to x2,y2
 //
 void uc1701DrawLine(int x1, int y1, int x2, int y2);
+//
+// Draw a 16x16 tile in any of 4 rotated positions
+// Assumes input image is laid out like "normal" graphics with
+// the MSB on the left and 2 bytes per line
+// On AVR, the source image is assumed to be in FLASH memory
+// The function can draw the tile on byte boundaries, so the x value
+// can be from 0 to 112 and y can be from 0 to 7
+//
+void uc1701DrawTile(uint8_t *pTile, int x, int y, int iRotation);
 
