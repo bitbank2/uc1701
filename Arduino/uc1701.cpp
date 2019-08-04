@@ -494,7 +494,7 @@ static unsigned char ucScreen[1024]; // local copy of the image buffer
 static byte iDCPin, iResetPin, iLEDPin;
 static byte bFlipped = 0; // indicates display is flipped 180 degrees
 static void uc1701WriteCommand(unsigned char c);
-static void uc1701WriteDataBlock(unsigned char *ucBuf, int iLen);
+void uc1701WriteDataBlock(unsigned char *ucBuf, int iLen);
 
 typedef enum
 {
@@ -555,15 +555,17 @@ int uc1701Init(int iDC, int iReset, int iLED, int iCS, byte bFlip180, byte bInve
         csPin = iCS;
         iResetPin = iReset;
         iLEDPin = iLED;
-
-        SPI.begin();
-        SPI.beginTransaction(SPISettings(iClock, MSBFIRST, SPI_MODE0));
+	if (iClock != -1) // don't reset the SPI parameters if -1
+	{
+        	SPI.begin();
+        	SPI.beginTransaction(SPISettings(iClock, MSBFIRST, SPI_MODE0));
+	}
         pinMode(csPin,OUTPUT);
         digitalWrite(csPin, HIGH);
 
         pinMode(iDCPin, OUTPUT);
         pinMode(iResetPin, OUTPUT);
-        if (iLEDPin != 255) // not used
+        if (iLEDPin != -1) // not used
         {
            pinMode(iLEDPin, OUTPUT);
         }
@@ -576,7 +578,6 @@ int uc1701Init(int iDC, int iReset, int iLED, int iCS, byte bFlip180, byte bInve
         digitalWrite(iResetPin, HIGH); // take it out of reset
         delay(10);
         uc1701Backlight(1); // turn on the backlight
-        digitalWrite(csPin, LOW);
 
   uc1701PowerUp(); // turn on and initialize the display
 
@@ -706,9 +707,9 @@ void uc1701PowerDown()
 
 static void uc1701WriteCommand(unsigned char c)
 {
-//  digitalWrite(csPin, LOW);
+  digitalWrite(csPin, LOW);
   SPI.transfer(c);
-//  digitalWrite(csPin, HIGH);
+  digitalWrite(csPin, HIGH);
 } /* uc1701WriteCommand() */
 
 int uc1701SetContrast(unsigned char ucContrast)
@@ -754,14 +755,14 @@ byte bTemp[32];
      while (i >= 32)
      {
         memcpy_P(bTemp, ucBuf, 32);
-        SPI.transfer(bTemp, 32);
+        uc1701WriteDataBlock(bTemp, 32);
         ucBuf += 32;
         i -= 32;
      }
      if (i)
      {
         memcpy_P(bTemp, ucBuf, i);
-        SPI.transfer(bTemp, i);
+        uc1701WriteDataBlock(bTemp, i);
         ucBuf += i;
      }
      iScreenOffset &= 0x3ff;
@@ -775,7 +776,7 @@ byte bTemp[32];
      else
         i = iLen;
      memcpy_P(bTemp, ucBuf, i);
-     SPI.transfer(bTemp, i);
+     uc1701WriteDataBlock(bTemp, i);
      ucBuf += i;
      iLen -= i;
   }
@@ -797,12 +798,12 @@ byte bTemp[32];
      iScreenOffset += j;
      while (i >= 32) // internal buffer is only 32 bytes
      {
-        SPI.transfer(bTemp, 32);
+        uc1701WriteDataBlock(bTemp, 32);
         i -= 32;
      }
      if (i)
      {
-        SPI.transfer(bTemp, i);
+        uc1701WriteDataBlock(bTemp, i);
      }
      iScreenOffset &= 0x3ff;
      uc1701SetPosition(iScreenOffset & 0x7f, (iScreenOffset >> 7));     
@@ -811,19 +812,19 @@ byte bTemp[32];
      iScreenOffset += iLen;
      while (iLen >= 32) // internal buffer is only 32 bytes
      {
-        SPI.transfer(bTemp, 32);
+        uc1701WriteDataBlock(bTemp, 32);
         iLen -= 32;
      }
      if (iLen)
      {
-        SPI.transfer(bTemp, iLen);
+        uc1701WriteDataBlock(bTemp, iLen);
      }
 
 } /* uc1701RepeatByte() */
 
 // Write a block of pixel data to the LCD
 // Length can be anything from 1 to 504 (whole display)
-static void uc1701WriteDataBlock(unsigned char *ucBuf, int iLen)
+void uc1701WriteDataBlock(unsigned char *ucBuf, int iLen)
 {
 int i;
 
@@ -834,6 +835,7 @@ int i;
   memcpy(&ucScreen[iScreenOffset], ucBuf, iLen);
 #endif
   iScreenOffset += iLen;
+  digitalWrite(csPin, LOW);
   while (iLen) // internal buffer is only 32 bytes
   {
      if (iLen >= 32)
@@ -844,7 +846,8 @@ int i;
      ucBuf += i;
      iLen -= i;
   }
-}
+  digitalWrite(csPin, HIGH);
+} /* uc1701WriteDataBlock() */
 
 //
 // Load a 128x64 1-bpp Windows bitmap

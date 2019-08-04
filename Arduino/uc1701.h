@@ -33,7 +33,10 @@ void uc1701RepeatByte(unsigned char uc, int iLen);
 // Send commands to position the "cursor" to the given
 // row and column
 void uc1701SetPosition(int x, int y);
-
+//
+// Write a block of pixel data to the LCD
+// Length can be anything from 1 to 504 (whole display)
+void uc1701WriteDataBlock(unsigned char *ucBuf, int iLen);
 //
 // Load a 128x64 1-bpp Windows bitmap
 //
